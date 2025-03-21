@@ -1,0 +1,16 @@
+[package]
+name = "zk-sudoku-prover"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "server"
+path = "src/main.rs"
+
+[dependencies]
+itertools = "0.14.0"
+petgraph = "0.7.1"
+rand = "0.9.0"
