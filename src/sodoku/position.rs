@@ -2,6 +2,11 @@ use std::ops::{Index, IndexMut};
 
 use super::{Point, cell::Cell};
 
+/// Represents the positions on a Sudoku board (1-9).
+/// Each position represents an axis-aligned cell in a 9x9 grid.
+/// The positions are represented as an enum for better type safety and clarity.
+/// The positions are 1-indexed for better readability, but they can be converted to 0-indexed
+/// for internal calculations.
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 pub enum Position {
@@ -37,7 +42,8 @@ impl Position {
         Position::from_index(index)
     }
 
-    fn to_index(self) -> usize {
+    // Converts the position to an index (0-8). Private to prevent out-of-bounds access.
+    pub fn to_index(self) -> usize {
         match self {
             Position::ONE => 0,
             Position::TWO => 1,
@@ -50,8 +56,8 @@ impl Position {
             Position::NINE => 8,
         }
     }
-
-    fn from_index(index: usize) -> Position {
+    /// Converts an index (0-8) to a Position. Panics if the index is out of bounds.
+    pub fn from_index(index: usize) -> Position {
         match index {
             0 => Position::ONE,
             1 => Position::TWO,
@@ -169,6 +175,8 @@ impl IndexMut<Position> for [[Cell; 9]; 9] {
 #[cfg(test)]
 mod test {
     use std::collections::HashSet;
+
+    use crate::Value;
 
     use super::*;
 
@@ -302,18 +310,21 @@ mod test {
     #[test]
     fn test_index_operations() {
         let mut cells = [Cell::Empty; 9];
-        cells[Position::THREE] = Cell::from(3);
-        cells[Position::SEVEN] = Cell::from(7);
+        cells[Position::THREE] = Cell::new_hint(3);
+        cells[Position::SEVEN] = Cell::new_guess(7);
 
-        assert_eq!(cells[Position::THREE], Cell::from(3));
-        assert_eq!(cells[Position::SEVEN], Cell::from(7));
+        assert_eq!(cells[Position::THREE], Cell::Hint(Value::Three));
+        assert_eq!(cells[Position::SEVEN], Cell::Guess(Value::Seven));
         assert_eq!(cells[Position::ONE], Cell::Empty);
 
         // Test with 2D array
         let mut grid = [[Cell::Empty; 9]; 9];
-        grid[Position::TWO][Position::FOUR] = Cell::from(5);
+        grid[Position::TWO][Position::FOUR] = Cell::new_guess(5);
 
-        assert_eq!(grid[Position::TWO][Position::FOUR], Cell::from(5));
+        assert_eq!(
+            grid[Position::TWO][Position::FOUR],
+            Cell::Guess(Value::Five)
+        );
         assert_eq!(grid[Position::TWO][Position::ONE], Cell::Empty);
     }
 

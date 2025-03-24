@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use petgraph::dot::{Config, Dot};
 use zk_sudoku_prover::*;
 
 fn main() {
@@ -9,4 +10,8 @@ fn main() {
     let board = SudokuGrid::from_str(line).unwrap();
     println!("Board:\n{}", board);
     println!("Valid: {}", board.is_valid_solution());
+    let graph = Graph::from_sudoku(&board);
+    let g = graph.graph;
+
+    println!("{:?}", Dot::with_config(&g, &[Config::EdgeNoLabel]));
 }

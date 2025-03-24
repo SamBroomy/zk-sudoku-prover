@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use super::{Box, Cell, Column, Position, Row, Set};
+use super::{Box, Cell, Column, Point, Position, Row, Set};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub struct SudokuGrid {
@@ -12,6 +12,10 @@ impl SudokuGrid {
         Self {
             cells: [[Cell::Empty; 9]; 9],
         }
+    }
+
+    pub fn get_cell(&self, pos: Point) -> Cell {
+        self.cells[pos]
     }
 
     pub fn get_row(&self, row: Position) -> Set<Row> {
@@ -64,7 +68,7 @@ impl FromStr for SudokuGrid {
         }
         let mut cells = [[Cell::Empty; 9]; 9];
         for (i, c) in s.chars().enumerate() {
-            cells[i / 9][i % 9] = Cell::from(c);
+            cells[i / 9][i % 9] = Cell::guess_from_char(c);
         }
         Ok(Self { cells })
     }

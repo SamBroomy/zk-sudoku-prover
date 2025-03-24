@@ -42,20 +42,40 @@ impl<T: SetType> Set<T> {
         self.position
     }
 
+    pub fn is_complete(&self) -> bool {
+        if !self.is_filled() {
+            return false;
+        }
+
+        // Get the values as a vec and check they're all unique
+        let values: Vec<_> = self.cells.iter().filter_map(|cell| cell.value()).collect();
+
+        if values.len() != 9 {
+            return false;
+        }
+
+        // Check that all values are unique
+        values.iter().all_unique()
+    }
+
+    /// Checks if the set is valid so far - no duplicate values
+    /// (but may contain empties or be incomplete)
     pub fn is_valid(&self) -> bool {
-        self.cells.iter().all_unique() && self.cells.iter().all(|&cell| cell != Cell::Empty)
-    }
-
-    pub fn is_empty(&self) -> bool {
-        self.cells.iter().all(|&cell| cell == Cell::Empty)
-    }
-
-    pub fn is_partial_valid(&self) -> bool {
+        // Only check non-empty cells for uniqueness
         self.cells
             .iter()
-            .filter(|&&cell| cell != Cell::Empty)
+            .filter_map(|cell| cell.value())
             .all_unique()
-            && !self.is_empty()
+    }
+
+    /// Checks if all cells are empty
+    pub fn is_empty(&self) -> bool {
+        self.cells.iter().all(|cell| cell.is_empty())
+    }
+
+    /// Checks if all cells are filled (no empties)
+    pub fn is_filled(&self) -> bool {
+        self.cells.iter().all(|cell| cell.is_filled())
     }
 }
 
@@ -66,15 +86,15 @@ mod test {
     #[test]
     fn test_correct_row() {
         let cells = [
-            Cell::One,
-            Cell::Two,
-            Cell::Three,
-            Cell::Four,
-            Cell::Five,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
-            Cell::Nine,
+            Cell::new_guess(1),
+            Cell::new_guess(2),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_hint(5),
+            Cell::new_guess(6),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
+            Cell::new_guess(9),
         ];
         let set: Set<Row> = Set::new(cells, Position::ONE);
         assert!(set.is_valid());
@@ -83,16 +103,17 @@ mod test {
     #[test]
     fn test_incorrect_row_with_duplicates() {
         let cells = [
-            Cell::Nine,
-            Cell::Two,
-            Cell::Three,
-            Cell::Four,
-            Cell::Five,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
-            Cell::Nine,
+            Cell::new_guess(9),
+            Cell::new_guess(2),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_guess(5),
+            Cell::new_hint(6),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
+            Cell::new_guess(9),
         ];
+
         let set: Set<Row> = Set::new(cells, Position::ONE);
         assert!(!set.is_valid());
     }
@@ -100,15 +121,15 @@ mod test {
     #[test]
     fn test_incorrect_row_with_empty() {
         let cells = [
-            Cell::One,
-            Cell::Two,
-            Cell::Three,
-            Cell::Four,
-            Cell::Empty,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
-            Cell::Nine,
+            Cell::new_guess(1),
+            Cell::new_guess(2),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_hint(5),
+            Cell::new_empty(),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
+            Cell::new_guess(9),
         ];
         let set: Set<Row> = Set::new(cells, Position::ONE);
         assert!(!set.is_valid());
@@ -117,15 +138,15 @@ mod test {
     #[test]
     fn test_correct_column() {
         let cells = [
-            Cell::One,
-            Cell::Two,
-            Cell::Three,
-            Cell::Four,
-            Cell::Five,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
-            Cell::Nine,
+            Cell::new_guess(1),
+            Cell::new_guess(2),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_hint(5),
+            Cell::new_guess(6),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
+            Cell::new_guess(9),
         ];
         let set: Set<Column> = Set::new(cells, Position::THREE);
         assert!(set.is_valid());
@@ -134,15 +155,15 @@ mod test {
     #[test]
     fn test_incorrect_column_with_empty() {
         let cells = [
-            Cell::One,
-            Cell::Two,
-            Cell::Three,
-            Cell::Four,
-            Cell::Empty,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
-            Cell::Nine,
+            Cell::new_guess(1),
+            Cell::new_guess(2),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_empty(),
+            Cell::new_guess(6),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
+            Cell::new_guess(9),
         ];
         let set: Set<Column> = Set::new(cells, Position::ONE);
         assert!(!set.is_valid());
@@ -151,15 +172,15 @@ mod test {
     #[test]
     fn test_correct_square() {
         let cells = [
-            Cell::One,
-            Cell::Five,
-            Cell::Three,
-            Cell::Four,
-            Cell::Nine,
-            Cell::Two,
-            Cell::Six,
-            Cell::Seven,
-            Cell::Eight,
+            Cell::new_guess(1),
+            Cell::new_guess(5),
+            Cell::new_guess(3),
+            Cell::new_guess(4),
+            Cell::new_hint(9),
+            Cell::new_guess(2),
+            Cell::new_guess(6),
+            Cell::new_guess(7),
+            Cell::new_guess(8),
         ];
         let set: Set<Box> = Set::new(cells, Position::ONE);
         assert!(set.is_valid());
@@ -167,7 +188,7 @@ mod test {
 
     #[test]
     fn test_getters() {
-        let cells = [Cell::One; 9];
+        let cells = [Cell::new_guess(1); 9];
         let position = Position::FIVE;
         let set: Set<Row> = Set::new(cells, position);
 
