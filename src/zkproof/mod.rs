@@ -6,3 +6,4 @@ mod verifier;
 pub use protocol::*;
 pub use prover::*;
 pub use types::*;
+pub use verifier::*;

@@ -2,15 +2,15 @@ use crate::Value;
 use rand::rng;
 use rand::seq::SliceRandom;
 
-/// A permutation of colors (values 1-9)
+/// A permutation of colours (values 1-9)
 #[derive(Debug, Clone)]
-pub struct ColorShuffle {
+pub struct ColourShuffle {
     /// Maps from original value to shuffled value (0-indexed)
     value_map: [Value; 9],
 }
 
-impl ColorShuffle {
-    /// Create a new random color shuffle
+impl ColourShuffle {
+    /// Create a new random colour shuffle
     pub fn new_random() -> Self {
         let mut rng = rng();
         let mut values = Value::ALL_VALUES;
@@ -35,8 +35,8 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_color_shuffle() {
-        let shuffle = ColorShuffle::new_random();
+    fn test_colour_shuffle() {
+        let shuffle = ColourShuffle::new_random();
         let original = Value::One;
         let shuffled = shuffle.apply(original);
         let reversed = shuffle.reverse_apply(shuffled);

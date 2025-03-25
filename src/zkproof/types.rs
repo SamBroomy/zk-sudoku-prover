@@ -1,17 +1,44 @@
 // src/zkproof/types.rs
-use petgraph::graph::EdgeIndex;
+use crate::{
+    CommitmentError,
+    crypto::{Commitment, CommitmentKey, Hidden},
+};
+use petgraph::graph::{EdgeIndex, NodeIndex};
+use std::collections::HashMap;
+// Round identifier with newtype pattern for type safety
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct RoundId(pub usize);
 
-use crate::CommitmentError;
+pub type EdgeNodeMap = HashMap<EdgeIndex, (NodeIndex, NodeIndex)>;
 
 #[derive(Debug, Clone)]
-pub struct EdgeReveal {
-    pub edge_index: EdgeIndex,
-    pub node1_id: usize,
-    pub node1_value: u8,
-    pub node1_nonce: Vec<u8>,
-    pub node2_id: usize,
-    pub node2_value: u8,
-    pub node2_nonce: Vec<u8>,
+pub struct ProverCommitment {
+    pub round_id: RoundId,
+    pub commitments: HashMap<NodeIndex, Commitment<Hidden>>,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct VerifierChallenge {
+    pub round_id: RoundId,
+    pub edge: EdgeIndex,
+}
+
+pub struct NodeReveal {
+    pub node_idx: NodeIndex,
+    pub node_key: CommitmentKey,
+}
+
+pub struct ProverResponse {
+    pub round_id: RoundId,
+    pub edge: EdgeIndex,
+    pub node1: NodeReveal,
+    pub node2: NodeReveal,
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct VerifierResult {
+    pub round_id: RoundId,
+    pub success: bool,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -20,6 +47,8 @@ pub enum ZkProofError {
     NodeNotFound(usize),
     #[error("Edge not found: {0:?}")]
     EdgeNotFound(EdgeIndex),
+    #[error("Node mismatch: revealed nodes don't match the challenged edge")]
+    NodeMismatch,
     #[error("Invalid reveal: hash doesn't match")]
     InvalidReveal(#[from] CommitmentError),
     #[error("No edges available")]

@@ -60,11 +60,11 @@ impl SudokuGrid {
 }
 
 impl FromStr for SudokuGrid {
-    type Err = ();
+    type Err = SudokuError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() != 81 {
-            return Err(());
+            return Err(SudokuError::InvalidInputLength(s.len()));
         }
         let mut cells = [[Cell::Empty; 9]; 9];
         for (i, c) in s.chars().enumerate() {
@@ -90,6 +90,13 @@ impl fmt::Display for SudokuGrid {
         }
         Ok(())
     }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum SudokuError {
+    #[error("Invalid input length: {0}, expected 81 characters")]
+    InvalidInputLength(usize),
+    // Other potential errors...
 }
 
 #[cfg(test)]
