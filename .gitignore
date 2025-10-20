@@ -9,3 +9,4 @@
 /target
 !**/*.py
 !readme.md
+!data/validation.csv

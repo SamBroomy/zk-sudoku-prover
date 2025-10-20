@@ -25,6 +25,7 @@ impl CommitmentKey {
         &self.nonce
     }
 
+    #[allow(dead_code)]
     pub(crate) fn new(value: Value, nonce: Bytes) -> Self {
         Self { value, nonce }
     }

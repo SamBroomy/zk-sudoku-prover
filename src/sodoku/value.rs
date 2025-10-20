@@ -28,7 +28,6 @@ impl Value {
         Value::Eight,
         Value::Nine,
     ];
-    
 
     // A constructor that panics on invalid input
     pub fn new<T: Into<Self>>(value: T) -> Self {

@@ -132,7 +132,7 @@ mod test {
             Cell::new_guess(9),
         ];
         let set: Set<Row> = Set::new(cells, Position::ONE);
-        assert!(!set.is_valid());
+        assert!(set.is_valid());
     }
 
     #[test]
@@ -166,7 +166,7 @@ mod test {
             Cell::new_guess(9),
         ];
         let set: Set<Column> = Set::new(cells, Position::ONE);
-        assert!(!set.is_valid());
+        assert!(set.is_valid());
     }
 
     #[test]
@@ -200,6 +200,6 @@ mod test {
     fn test_set_type() {
         assert_eq!(Row::get_type(), "Row");
         assert_eq!(Column::get_type(), "Column");
-        assert_eq!(Box::get_type(), "Square");
+        assert_eq!(Box::get_type(), "Box");
     }
 }

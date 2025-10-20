@@ -143,10 +143,10 @@ fn main() {
 }
 ```
 
-### Running Quick Development Example
+### Running Example
 
 ```bash
-cargo run --example quick_dev
+cargo run --release
 ```
 
 ## How It Works
@@ -227,5 +227,5 @@ The implementation ensures:
 
 Current implementation performance:
 
-- Typical proof time: ~120ms for a standard Sudoku grid
-- Confidence: Can achieve 99% confidence in approximately 100 rounds
+- Typical proof time: ~96ms for a standard Sudoku grid
+- Confidence: Can achieve 99% confidence in approximately 4500 rounds

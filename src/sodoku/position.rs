@@ -35,6 +35,7 @@ impl Position {
         Position::NINE,
     ];
 
+    #[allow(dead_code)]
     fn random() -> Position {
         use rand::Rng;
         let mut rng = rand::rng();

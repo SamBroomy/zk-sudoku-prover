@@ -1,6 +1,5 @@
-use itertools::Itertools;
 use petgraph::graph::{EdgeIndex, NodeIndex};
-use petgraph::visit::{EdgeRef, IntoEdgeReferences};
+use petgraph::visit::EdgeRef;
 use std::collections::HashMap;
 
 use crate::{ColourShuffle, Commitment, CommitmentKey, Graph, SudokuGrid};
@@ -10,7 +9,6 @@ use super::{EdgeNodeMap, NodeReveal, ZkProofError};
 use super::types::{ProverCommitment, ProverResponse, RoundId, VerifierChallenge};
 
 pub struct ProverRound {
-    colour_shuffle: ColourShuffle,
     commitment_keys: HashMap<NodeIndex, CommitmentKey>, // node_id -> commitment
     challenged_edges: Vec<EdgeIndex>,
 }
@@ -24,11 +22,11 @@ pub struct Prover {
 impl Prover {
     pub fn new(puzzle: &SudokuGrid) -> Result<(Self, EdgeNodeMap), ZkProofError> {
         // Validate the Sudoku puzzle
-        // if !puzzle.is_valid_solution() {
-        //     return Err(ZkProofError::SudokuError(
-        //         "Invalid Sudoku puzzle".to_string(),
-        //     ));
-        // }
+        if !puzzle.is_valid_solution() {
+            return Err(ZkProofError::SudokuError(
+                "Invalid Sudoku puzzle".to_string(),
+            ));
+        }
         let graph = Graph::from_sudoku(puzzle);
         let mut edge_map = HashMap::with_capacity(graph.graph.edge_count());
         for edge_idx in graph.graph.edge_references() {
@@ -59,7 +57,6 @@ impl Prover {
             .unzip();
 
         let round = ProverRound {
-            colour_shuffle,
             commitment_keys,
             challenged_edges: Vec::new(),
         };
@@ -192,11 +189,11 @@ mod test {
         // The commitments should be different due to different colour shuffles
         let mut all_different = true;
         for (node, comm1) in commitment1.commitments.iter() {
-            if let Some(comm2) = commitment2.commitments.get(node) {
-                if comm1.hash() == comm2.hash() {
-                    all_different = false;
-                    break;
-                }
+            if let Some(comm2) = commitment2.commitments.get(node)
+                && comm1.hash() == comm2.hash()
+            {
+                all_different = false;
+                break;
             }
         }
         assert!(

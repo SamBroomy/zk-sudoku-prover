@@ -96,7 +96,6 @@ impl fmt::Display for SudokuGrid {
 pub enum SudokuError {
     #[error("Invalid input length: {0}, expected 81 characters")]
     InvalidInputLength(usize),
-    // Other potential errors...
 }
 
 #[cfg(test)]
@@ -105,8 +104,10 @@ mod test {
 
     const INPUT: &str = include_str!("../../data/validation.csv");
 
-    fn parse_input() -> Vec<SudokuGrid> {
-        INPUT
+    #[test]
+    fn test_parse_input() {
+        let len = INPUT.lines().count();
+        let grids = INPUT
             .lines()
             .filter_map(|l| {
                 let line = l.trim();
@@ -116,6 +117,7 @@ mod test {
                     SudokuGrid::from_str(line).ok()
                 }
             })
-            .collect::<Vec<_>>()
+            .collect::<Vec<_>>();
+        assert_eq!(grids.len(), len);
     }
 }
