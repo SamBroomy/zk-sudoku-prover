@@ -4,7 +4,7 @@ A Rust implementation of a zero-knowledge proof system for Sudoku puzzles, based
 
 ## Overview
 
-This project demonstrates how a prover can convince a verifier that they've solved a Sudoku puzzle without revealing the actual solution. It implements the concepts discussed in [this video](https://www.youtube.com/watch?v=Otvcbw6k4eo)
+This project demonstrates how a prover can convince a verifier that they've solved a Sudoku puzzle without revealing the actual solution. It implements the concepts discussed in [this video](https://www.youtube.com/watch?v=Otvcbw6k4eo). I liked the video and wanted to try and implementing that style of zero-knowledge proof in Rust.
 
 The implementation uses:
 
